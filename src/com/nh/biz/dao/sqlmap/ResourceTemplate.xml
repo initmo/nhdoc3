@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceTemplate">
+
+	<typeAlias alias="ResourceTemplate" type="com.nh.biz.domain.ResourceTemplate"/>
+
+	<resultMap class="ResourceTemplate" id="RESULT_ResourceTemplate">
+		<result column="id" property="id" jdbcType="INTEGER" />
+	    <result column="titleId" property="titleid" jdbcType="INTEGER" />
+	    <result column="tmpName" property="tmpname" jdbcType="VARCHAR" />
+	    <result column="fileDir" property="filedir" jdbcType="VARCHAR" />
+	    <result column="fileName" property="filename" jdbcType="VARCHAR" />
+	    <result column="fileType" property="filetype" jdbcType="VARCHAR" />
+	    <result column="fileRealName" property="filerealname" jdbcType="VARCHAR" />
+	    <result column="uploadTime" property="uploadtime" jdbcType="TIMESTAMP" />
+	    <result column="remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="SELECT_ResourceTemplate">
+	 select id,titleId, tmpName, fileDir, fileName, fileType, fileRealName, uploadTime, remark
+     from ResourceTemplate
+	</sql>
+	
+	<sql id="WHERE_ResourceTemplate">
+		<dynamic prepend="where">
+		    <isNotNull property="titleid" prepend="AND">
+				<![CDATA[ResourceTemplate.titleId=#titleid#]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="ResourceTemplate.selectById" resultMap="ResourceTemplate.RESULT_ResourceTemplate" parameterClass="Integer">
+      <include refid="SELECT_ResourceTemplate"/>
+        WHERE ID = #id# 
+	</select>
+	
+	
+   <select id="ResourceTemplate.selectByMap"  resultMap="ResourceTemplate.RESULT_ResourceTemplate" parameterClass="java.util.Map">
+       <include refid="SELECT_ResourceTemplate"/>
+       <include refid="WHERE_ResourceTemplate"/>
+	</select>
+	
+	<insert id="ResourceTemplate.insert" parameterClass="ResourceTemplate">
+		 insert into ResourceTemplate (titleId, tmpName, fileDir, fileName, fileType, fileRealName,
+	      uploadTime, remark)
+	     values ( #titleid:INTEGER#, #tmpname:VARCHAR#, #filedir:VARCHAR#,
+	      #filename:VARCHAR#, #filetype:VARCHAR#, #filerealname:VARCHAR#, #uploadtime:TIMESTAMP#,
+	      #remark:VARCHAR#)
+	    <selectKey resultClass="int" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey> 
+	</insert>
+	
+	
+	<delete id="ResourceTemplate.delete" parameterClass="java.util.Map">
+		DELETE FROM ResourceTemplate 
+		<include refid="WHERE_ResourceTemplate"/>
+	</delete>
+	
+	<update id="ResourceTemplate.update" parameterClass="ResourceTemplate">
+		update ResourceTemplate
+        set 
+        titleId = #titleid:INTEGER#,
+        tmpName = #tmpname:VARCHAR#,
+        fileDir = #filedir:VARCHAR#,
+        fileName = #filename:VARCHAR#,
+        fileType = #filetype:VARCHAR#,
+        fileRealName = #filerealname:VARCHAR#,
+        uploadTime = #uploadtime:TIMESTAMP#,
+        remark = #remark:VARCHAR#
+		WHERE ID = #id# 
+	</update>
+	
+	<delete id="ResourceTemplate.deleteById" parameterClass="Integer">
+		DELETE FROM ResourceTemplate
+		WHERE ID = #id# 
+	</delete>
+	
+</sqlMap>
+

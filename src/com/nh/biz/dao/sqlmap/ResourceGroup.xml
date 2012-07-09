@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceGroup" >
+	<typeAlias alias="ResourceGroup" type="com.nh.biz.domain.ResourceGroup"/>
+	<typeAlias alias="Department" type="com.nh.biz.domain.system.Department"/>
+
+	
+  <resultMap id="RESULT_ResourceGroup_BASIC" class="ResourceGroup" >
+    <result column="ID" property="id" jdbcType="INTEGER" />
+    <result column="GRP_NAME" property="grpName" jdbcType="VARCHAR" />
+    <result column="GRP_DESC" property="grpDesc" jdbcType="VARCHAR" />
+    <result column="CREATE_DEPTID" property="createDeptid" jdbcType="INTEGER" />
+  </resultMap>
+	
+   <resultMap class="ResourceGroup" id="RESULT_ResourceGroup" groupBy="id" extends="RESULT_ResourceGroup_BASIC">
+		<result property="departments" resultMap="Department.department-result-basic"/>
+   </resultMap>
+   
+	<sql id="SELECT_ResourceGroup">
+	SELECT ResourceGroup.ID,ResourceGroup.GRP_NAME, ResourceGroup.GRP_DESC, 
+      ResourceGroup.CREATE_DEPTID, TDepartment.deptId,TDepartment.deptName
+      FROM Resource_grp_dept INNER JOIN
+      TDepartment ON 
+      Resource_grp_dept.DEPT_ID = TDepartment.deptId RIGHT OUTER JOIN
+      ResourceGroup ON Resource_grp_dept.GRP_ID = ResourceGroup.ID
+	</sql>
+
+	
+	<sql id="WHERE_ResourceGroup">
+		<dynamic prepend="where">
+		    <isNotNull property="createDeptid" prepend="AND">
+				<![CDATA[ResourceGroup.create_Deptid=#createDeptid#]]>
+			</isNotNull>
+		    <isNotNull property="uploadDeptid" prepend="AND">
+				<![CDATA[ResourceGroup.id in (SELECT GRP_ID FROM Resource_grp_dept WHERE DEPT_ID =#uploadDeptid# )]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="ResourceGroup.selectById" resultMap="ResourceGroup.RESULT_ResourceGroup" parameterClass="Integer">
+      <include refid="SELECT_ResourceGroup"/>
+        WHERE ResourceGroup.ID = #id# 
+	</select>
+	
+	
+   <select id="ResourceGroup.selectByMap"  resultMap="ResourceGroup.RESULT_ResourceGroup" parameterClass="java.util.Map">
+       <include refid="SELECT_ResourceGroup"/>
+       <include refid="WHERE_ResourceGroup"/>
+	</select>
+	
+	<insert id="ResourceGroup.insert" parameterClass="ResourceGroup">
+		insert into ResourceGroup ( GRP_NAME, GRP_DESC, CREATE_DEPTID)
+        values (#grpName:VARCHAR#, #grpDesc:VARCHAR#, #createDeptid:INTEGER#)
+	    <selectKey resultClass="int" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey> 
+	</insert>
+	
+	
+	<delete id="ResourceGroup.delete" parameterClass="java.util.Map">
+		delete from ResourceGroup
+		<include refid="WHERE_ResourceGroup"/>
+	</delete>
+	
+	<update id="ResourceGroup.update" parameterClass="ResourceGroup">
+		update ResourceGroup
+        set
+        GRP_NAME = #grpName:VARCHAR#,
+        GRP_DESC = #grpDesc:VARCHAR#,
+        CREATE_DEPTID = #createDeptid:INTEGER#
+		WHERE ID = #id# 
+	</update>
+	
+	<update id="ResourceGroup.deleteById" parameterClass="Integer">
+		DELETE FROM ResourceGroup
+		WHERE ID = #id# 
+	</update>
+	
+	
+	<insert id="ResourceGroup.INSERT_RESOURCE_GRP_DEPT" parameterClass="java.util.Map">
+	INSERT INTO Resource_grp_dept
+      (GRP_ID, DEPT_ID)
+    VALUES (#groupId#,#deptId#)    
+	</insert>
+	
+	<delete id="ResourceGroup.DELETE_RESOURCE_GRP_DEPT" parameterClass="java.util.Map">
+		delete from Resource_grp_dept
+		WHERE GRP_ID = #groupId#
+	</delete>
+	
+</sqlMap>
+

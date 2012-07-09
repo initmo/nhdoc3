@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceActor" >
+	<typeAlias alias="ResourceActor" type="com.nh.biz.domain.ResourceActor"/>
+	
+  <resultMap id="RESULT_ResourceActor" class="ResourceActor" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="titleId" property="titleid" jdbcType="INTEGER" />
+    <result column="userId" property="userid" jdbcType="INTEGER" />
+  </resultMap>
+	
+	<sql id="SELECT_ResourceActor">
+	 select id, titleId, userId from ResourceActor
+	</sql>
+	
+	<sql id="WHERE_ResourceActor">
+		<dynamic prepend="where">
+		    <isNotNull property="titleid" prepend="AND">
+				<![CDATA[ResourceActor.titleid=#titleid#]]>
+			</isNotNull>
+		    <isNotNull property="userid" prepend="AND">
+				<![CDATA[ResourceActor.userId=#userid#]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="ResourceActor.selectById" resultMap="ResourceActor.RESULT_ResourceActor" parameterClass="Integer">
+      <include refid="SELECT_ResourceActor"/>
+        WHERE ID = #id# 
+	</select>
+	
+	
+   <select id="ResourceActor.selectByMap"  resultMap="ResourceActor.RESULT_ResourceActor" parameterClass="java.util.Map">
+       <include refid="SELECT_ResourceActor"/>
+       <include refid="WHERE_ResourceActor"/>
+	</select>
+	
+	<insert id="ResourceActor.insert" parameterClass="ResourceActor">
+		insert into ResourceActor ( titleId, userId)
+    	values (#titleid:INTEGER#, #userid:INTEGER#)
+	    <selectKey resultClass="int" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey> 
+	</insert>
+	
+	
+	<delete id="ResourceActor.deleteByMap" parameterClass="java.util.Map">
+		delete from ResourceActor
+		<include refid="WHERE_ResourceActor"/>
+	</delete>
+	
+	<update id="ResourceActor.update" parameterClass="ResourceActor">
+	  update ResourceActor set titleId = #titleid:INTEGER#,
+      userId = #userid:INTEGER#
+	</update>
+	
+	<delete id="ResourceActor.deleteById" parameterClass="Integer">
+		DELETE FROM ResourceActor
+		WHERE ID = #id# 
+	</delete>
+	
+	
+	<insert id="ResourceActor.setAllResourceActToUser"  parameterClass="java.util.Map">
+	INSERT INTO ResourceActor (titleId, userId)
+	SELECT ResourceTitle.ID, TUser.userId FROM TUser 
+	CROSS JOIN  ResourceTitle
+	WHERE 
+	 (TUser.USERID = #userId#)
+	 AND (ResourceTitle.ID IN
+	          (SELECT ResourceTitle.ID
+	         FROM ResourceTree INNER JOIN
+	               ResourceTitle ON ResourceTree.ID = ResourceTitle.treeId
+	         WHERE (ResourceTree.GroupId = #groupId#)))
+	</insert>
+	
+	
+</sqlMap>
+

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="MyActNotice">
+
+	<typeAlias alias="MyActNotice" type="com.nh.biz.domain.MyActNotice"/>
+
+	<resultMap class="MyActNotice" id="RESULT_MyActNotice">
+		<result column="id" property="id" jdbcType="INTEGER" />
+	    <result column="deptId" property="deptid" jdbcType="INTEGER" />
+	    <result column="titleId" property="titleid" jdbcType="INTEGER" />
+	    <result column="titleName" property="titlename" jdbcType="VARCHAR" />
+	    <result column="recentlyAct" property="recentlyact" jdbcType="TIMESTAMP" />
+	    <result column="nextAct" property="nextact" jdbcType="TIMESTAMP" />
+	    <result column="cycleType" property="cycleType" jdbcType="TIMESTAMP" />
+	    <result column="actDay" property="actDay" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="SELECT_MyActNotice">
+	select id, deptId, titleId, titleName, recentlyAct, nextAct,cycleType,actDay
+    from MyActNotice
+	</sql>
+	
+	<sql id="WHERE_MyActNotice">
+		<dynamic prepend="where">
+		    <isNotNull property="deptid" prepend="AND">
+				<![CDATA[MyActNotice.deptid=#deptid#]]>
+			</isNotNull>
+			<isNotNull property="titleid" prepend="AND">
+				<![CDATA[MyActNotice.titleid=#titleid#]]>
+			</isNotNull>
+			<isNotNull property="nextact" prepend="AND">
+				<![CDATA[MyActNotice.nextact < #nextact#]]>
+			</isNotNull>
+		    <isNotNull property="titleids" prepend="AND">
+		   		 titleid in (-1,
+				<iterate  conjunction="," open="" close="," property="titleids">
+				  #titleids[]#
+				</iterate>
+				-1)
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	
+	<select id="MyActNotice.selectById" resultMap="MyActNotice.RESULT_MyActNotice" parameterClass="Integer">
+      <include refid="SELECT_MyActNotice"/>
+        WHERE ID = #id# 
+	</select>
+	
+   <select id="MyActNotice.selectByMap"  resultMap="MyActNotice.RESULT_MyActNotice" parameterClass="java.util.Map">
+       <include refid="SELECT_MyActNotice"/>
+       <include refid="WHERE_MyActNotice"/>
+	</select>
+	
+	<insert id="MyActNotice.insert" parameterClass="MyActNotice">
+	  insert into MyActNotice (deptId, titleId, titleName, recentlyAct, nextAct,cycleType,actDay)
+      values (#deptid:INTEGER#, #titleid:INTEGER#, #titlename:VARCHAR#,
+      #recentlyact:TIMESTAMP#, #nextact:TIMESTAMP#,
+      #cycleType:INTEGER#, #actDay:VARCHAR#)
+	</insert>
+	
+	
+	<delete id="MyActNotice.delete" parameterClass="java.util.Map">
+		DELETE FROM MyActNotice 
+		<include refid="WHERE_MyActNotice"/>
+	</delete>
+	
+	<update id="MyActNotice.update" parameterClass="MyActNotice">
+	  update MyActNotice
+	  set
+      deptId = #deptid:INTEGER#,
+      titleId = #titleid:INTEGER#,
+      titleName = #titlename:VARCHAR#,
+      recentlyAct = #recentlyact:TIMESTAMP#,
+      nextAct = #nextact:TIMESTAMP#,
+      cycleType = #cycleType:INTEGER#,
+      actDay = #actDay:VARCHAR#
+      WHERE ID = #id# 
+	</update>
+	
+	<delete id="MyActNotice.deleteById" parameterClass="Integer">
+		DELETE FROM MyActNotice
+		WHERE ID = #id# 
+	</delete>
+	
+</sqlMap>
+

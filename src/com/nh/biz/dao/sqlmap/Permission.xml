@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Permission">
+
+	<typeAlias alias="Permission" type="com.nh.biz.domain.system.Permission"/>
+
+	<resultMap class="Permission" id="permission-result">
+		<result property="permissionId" column="permissionId"/>
+		<result property="permissionName" column="permissionName"/>
+		<result property="permissionDisplay" column="permissionDisplay"/>
+	</resultMap>
+	
+	<sql id="sql_select_permission">
+	SELECT permissionId, permissionName, permissionDisplay
+	FROM TPermission
+	</sql>
+	
+	<sql id="sql_where_permission">
+		<dynamic prepend="where">
+		    <isNotNull property="permissionId" prepend="AND">
+				<![CDATA[TPermission.permissionId=#permissionId#]]>
+			</isNotNull>
+			<isNotNull property="permissionName" prepend="AND">
+				<![CDATA[TPermission.permissionName=#permissionName#]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="Permission.selectById" resultMap="Permission.permission-result" parameterClass="String">
+      <include refid="sql_select_permission"/>
+        WHERE TPermission.permissionId = #id# 
+	</select>
+	
+	<select id="Permission.selectByIds" resultMap="Permission.permission-result" parameterClass="java.util.List">
+      <include refid="sql_select_permission"/>
+      WHERE PermissionId in
+		<iterate conjunction="," open="(" close=")">
+				#[]#
+		</iterate>
+	</select>
+	
+	<select id="Permission.selectUniqueByMap" resultMap="Permission.permission-result" parameterClass="java.util.Map">
+       <include refid="sql_select_permission"/>
+       <include refid="sql_where_permission"/>
+	</select>
+	
+   <select id="Permission.selectByMap"  resultMap="Permission.permission-result" parameterClass="java.util.Map">
+       <include refid="sql_select_permission"/>
+       <include refid="sql_select_permission"/>
+	</select>
+
+</sqlMap>
+

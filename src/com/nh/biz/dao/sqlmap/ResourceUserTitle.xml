@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceUserTitle">
+
+	<typeAlias alias="ResourceTitle" type="com.nh.biz.domain.ResourceTitle"/>
+	<typeAlias alias="ResourceUserTitle" type="com.nh.biz.domain.ResourceUserTitle"/>
+
+	
+	<resultMap class="ResourceUserTitle" id="RESULT_ResourceUserTitle" extends="RM.ResourceTitle">
+		<result property="userId"      column="userId"/>
+		<result property="arrowedAct"      column="arrowedAct"/>
+		<result property="arrowedApproval"      column="arrowedApproval"/>
+	</resultMap>
+
+	
+   <select id="ResourceUserTitle.selectByMap"  resultMap="RESULT_ResourceUserTitle" parameterClass="java.util.Map">
+       SELECT ResourceTitle.TreeId, ResourceTitle.TitleName, ResourceTitle.ID,ResourceTitle.isEnable,ResourceTitle.noticeCycle,ResourceTitle.actDay,
+       ResourceTitle.isApproval,$userId$ as userId,(SELECT 1 FROM ResourceActor WHERE ResourceActor.titleid = ResourceTitle.id AND userid=#userId#) AS arrowedAct,
+         (SELECT 1 FROM ResourceChecker WHERE ResourceChecker.titleid = ResourceTitle.id AND userid=#userId#) AS arrowedApproval
+	   FROM ResourceTitle 
+	    <include refid="ResourceTitle.WHERE"/>
+  </select>
+	
+</sqlMap>
+

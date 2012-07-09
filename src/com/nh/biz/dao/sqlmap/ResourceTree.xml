@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceTree">
+
+	<typeAlias alias="ResourceTree" type="com.nh.biz.domain.ResourceTree"/>
+
+	<resultMap class="ResourceTree" id="RESULT_ResourceTree">
+		<result property="id"       column="id"/>
+		<result property="treeName" column="treeName"/>
+		<result property="pid"      column="pid"/>
+		<result property="groupId"  column="groupId"/>
+		<result property="child"    column="child"/>
+	</resultMap>
+	
+	<sql id="SELECT_ResourceTree">
+	SELECT ID, TreeName, GroupId, PID, Child
+	FROM ResourceTree
+	</sql>
+	
+	<sql id="WHERE_ResourceTree">
+		<dynamic prepend="where">
+		    <isNotNull property="pid" prepend="AND">
+				<![CDATA[ResourceTree.pid=#pid#]]>
+			</isNotNull>
+			<isNotNull property="groupId" prepend="AND">
+				<![CDATA[ResourceTree.groupId=#groupId#]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="ResourceTree.selectById" resultMap="ResourceTree.RESULT_ResourceTree" parameterClass="Integer">
+      <include refid="SELECT_ResourceTree"/>
+        WHERE ID = #id# 
+	</select>
+	
+	
+   <select id="ResourceTree.selectByMap"  resultMap="ResourceTree.RESULT_ResourceTree" parameterClass="java.util.Map">
+       <include refid="SELECT_ResourceTree"/>
+       <include refid="WHERE_ResourceTree"/>
+	</select>
+	
+	<insert id="ResourceTree.insert" parameterClass="ResourceTree">
+		INSERT INTO ResourceTree (treeName,groupId,pid,child)
+	    VALUES (#treeName#,#groupId#,#pid#,#child#)
+	    <selectKey resultClass="int" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey> 
+	</insert>
+	
+	
+	<delete id="ResourceTree.delete" parameterClass="java.util.Map">
+		DELETE FROM ResourceTree 
+		<include refid="WHERE_ResourceTree"/>
+	</delete>
+	
+	<update id="ResourceTree.update" parameterClass="ResourceTree">
+		UPDATE ResourceTree SET treeName = #treeName# ,groupId = #groupId#,pid=#pid#,child=#child#
+		WHERE ID = #id# 
+	</update>
+	
+	<update id="ResourceTree.deleteById" parameterClass="Integer">
+		DELETE FROM ResourceTree
+		WHERE ID = #id# 
+	</update>
+	
+</sqlMap>
+

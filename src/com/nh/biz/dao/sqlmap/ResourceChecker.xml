@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceChecker" >
+	<typeAlias alias="ResourceChecker" type="com.nh.biz.domain.ResourceChecker"/>
+	
+  <resultMap id="RESULT_ResourceChecker" class="ResourceChecker" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="titleId" property="titleid" jdbcType="INTEGER" />
+    <result column="userId" property="userid" jdbcType="INTEGER" />
+  </resultMap>
+	
+	<sql id="SELECT_ResourceChecker">
+	 select id, titleId, userId from ResourceChecker
+	</sql>
+	
+	<sql id="WHERE_ResourceChecker">
+		<dynamic prepend="where">
+		    <isNotNull property="titleid" prepend="AND">
+				<![CDATA[ResourceChecker.titleid=#titleid#]]>
+			</isNotNull>
+		    <isNotNull property="userid" prepend="AND">
+				<![CDATA[ResourceChecker.userId=#userid#]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="ResourceChecker.selectById" resultMap="ResourceChecker.RESULT_ResourceChecker" parameterClass="Integer">
+      <include refid="SELECT_ResourceChecker"/>
+        WHERE ID = #id# 
+	</select>
+	
+	
+   <select id="ResourceChecker.selectByMap"  resultMap="ResourceChecker.RESULT_ResourceChecker" parameterClass="java.util.Map">
+       <include refid="SELECT_ResourceChecker"/>
+       <include refid="WHERE_ResourceChecker"/>
+	</select>
+	
+	<insert id="ResourceChecker.insert" parameterClass="ResourceChecker">
+		insert into ResourceChecker ( titleId, userId)
+    	values (#titleid:INTEGER#, #userid:INTEGER#)
+	    <selectKey resultClass="int" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey> 
+	</insert>
+	
+	
+	<delete id="ResourceChecker.deleteByMap" parameterClass="java.util.Map">
+		delete from ResourceChecker
+		<include refid="WHERE_ResourceChecker"/>
+	</delete>
+	
+	<update id="ResourceChecker.update" parameterClass="ResourceChecker">
+	  update ResourceChecker set titleId = #titleid:INTEGER#,
+      userId = #userid:INTEGER#
+	</update>
+	
+	<delete id="ResourceChecker.deleteById" parameterClass="Integer">
+		DELETE FROM ResourceChecker
+		WHERE ID = #id# 
+	</delete>
+	
+	
+</sqlMap>
+

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap>
+    <typeAlias alias="ResourceTitle" type="com.nh.biz.domain.ResourceTitle"/>
+    
+    <resultMap id="RM.ResourceTitle" class="ResourceTitle">
+        <result property="id" column="ID"/>
+        <result property="titleName" column="titleName"/>
+        <result property="treeId" column="treeId"/>
+        <result property="isEnable" column="isEnable"/>
+        <result property="noticeCycle" column="noticeCycle"/>
+        <result property="actDay" column="actDay"/>
+        <result property="isApproval" column="isApproval"/>
+    </resultMap>
+    
+    <!-- 公共SELECT语句 -->
+    <sql id="ResourceTitle.SELECT">
+    <![CDATA[
+		SELECT 
+		ID ,titleName ,treeId ,isEnable ,noticeCycle ,actDay ,isApproval 
+	    FROM ResourceTitle
+    ]]>
+	</sql>
+
+    <!-- 公共WHERE条件语句 -->
+	<sql id="ResourceTitle.WHERE">
+		<dynamic prepend="where">
+		    <isNotNull property="id" prepend="AND">
+				<![CDATA[ResourceTitle.ID=#id#]]>
+			</isNotNull>
+		    <isNotNull property="titleName" prepend="AND">
+				<![CDATA[ResourceTitle.titleName=#titleName#]]>
+			</isNotNull>
+		    <isNotNull property="treeId" prepend="AND">
+				<![CDATA[ResourceTitle.treeId=#treeId#]]>
+			</isNotNull>
+		    <isNotNull property="isEnable" prepend="AND">
+				<![CDATA[ResourceTitle.isEnable=#isEnable#]]>
+			</isNotNull>
+		    <isNotNull property="noticeCycle" prepend="AND">
+				<![CDATA[ResourceTitle.noticeCycle=#noticeCycle#]]>
+			</isNotNull>
+		    <isNotNull property="actDay" prepend="AND">
+				<![CDATA[ResourceTitle.actDay=#actDay#]]>
+			</isNotNull>
+		    <isNotNull property="isApproval" prepend="AND">
+				<![CDATA[ResourceTitle.isApproval=#isApproval#]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+    
+	 <!-- 公共ORDER BY语句 -->
+	<sql id="ResourceTitle.ORDER">
+	   <isNotNull property="orderBy" prepend="order by">
+       		$orderBy$ $order$
+       </isNotNull>
+	</sql>
+	
+	<select id="ResourceTitle.selectById" resultMap="RM.ResourceTitle" parameterClass="Integer">
+      <include refid="ResourceTitle.SELECT"/>
+	WHERE ID=#PK#
+	</select>
+	
+	<select id="ResourceTitle.selectByIds" resultMap="RM.ResourceTitle" parameterClass="java.util.List">
+      <include refid="ResourceTitle.SELECT"/>
+        WHERE  ID  in (-1,
+		<iterate  conjunction="," open="" close=",">
+				#[]#
+		</iterate>
+		-1)
+		ORDER BY ResourceTitle.ID
+	</select>
+	
+	<select id="ResourceTitle.selectByMap" resultMap="RM.ResourceTitle" parameterClass="java.util.Map">
+       <include refid="ResourceTitle.SELECT"/>
+       <include refid="ResourceTitle.WHERE"/>
+       <include refid="ResourceTitle.ORDER"/>
+	</select>
+	
+    <insert id="ResourceTitle.insert" parameterClass="ResourceTitle">
+    <![CDATA[
+        INSERT INTO ResourceTitle (
+        	titleName,
+        	treeId,
+        	isEnable,
+        	noticeCycle,
+        	actDay,
+        	isApproval
+        ) VALUES (
+        	#titleName# ,
+        	#treeId# ,
+        	#isEnable# ,
+        	#noticeCycle# ,
+        	#actDay# ,
+        	#isApproval# 
+        )
+    ]]>
+        <selectKey resultClass="int" keyProperty="id">
+			SELECT @@IDENTITY AS ID
+		</selectKey>
+    </insert>
+
+
+
+
+    <update id="ResourceTitle.update" parameterClass="ResourceTitle">
+    <![CDATA[
+        UPDATE ResourceTitle SET
+	        titleName = #titleName# ,
+	        treeId = #treeId# ,
+	        isEnable = #isEnable# ,
+	        noticeCycle = #noticeCycle# ,
+	        actDay = #actDay# ,
+	        isApproval = #isApproval# 
+        WHERE 
+	        ID = #id# 
+    ]]>
+    </update>
+
+    <delete id="ResourceTitle.deleteById"  parameterClass="Integer">
+    <![CDATA[
+        DELETE FROM ResourceTitle WHERE
+        ID = #id# 
+    ]]>
+    </delete>
+    
+    <delete id="ResourceTitle.deleteByMap" parameterClass="java.util.Map">
+		DELETE FROM ResourceTitle 
+		<include refid="ResourceTitle.WHERE"/>
+	</delete>
+    
+	 
+    <select id="ResourceTitle.count" resultClass="Integer" parameterClass="java.util.Map">
+        SELECT count(*) FROM ResourceTitle 
+        <include refid="ResourceTitle.WHERE"/>
+    </select>
+    
+    <select id="ResourceTitle.getResourceCounts"  parameterClass="java.util.Map"  resultClass="java.util.HashMap">
+    	SELECT 
+    	(SELECT COUNT(*) FROM resourceinfo WHERE ResourceTitle.id = resourceinfo.titleId AND resourceinfo.pid = 0  AND 
+         departmentId = #deptId# ) AS resourceCount, 
+		ID AS titleId
+		FROM ResourceTitle
+		WHERE (treeId = #treeId#)
+    </select>
+    
+	
+</sqlMap>
+

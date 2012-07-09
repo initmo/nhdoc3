@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceApproval">
+
+	<typeAlias alias="ResourceApproval" type="com.nh.biz.domain.ResourceApproval"/>
+
+	<resultMap class="ResourceApproval" id="RESULT_ResourceApproval">
+	    <result column="id" property="id" jdbcType="INTEGER" />
+	    <result column="actDeptId" property="actdeptid" jdbcType="INTEGER" />
+	    <result column="actDeptName" property="actdeptname" jdbcType="VARCHAR" />
+	    <result column="actorId" property="actorid" jdbcType="INTEGER" />
+	    <result column="actor" property="actor" jdbcType="VARCHAR" />
+	    <result column="sendTime" property="sendTime" jdbcType="TIMESTAMP" />
+	    <result column="resourceId" property="resourceid" jdbcType="INTEGER" />
+	    <result column="titleId" property="titleid" jdbcType="INTEGER" />
+	    <result column="fileType" property="filetype" jdbcType="VARCHAR" />
+	    <result column="resourceName" property="resourcename" jdbcType="VARCHAR" />
+	    <result column="checkerId" property="checkerid" jdbcType="INTEGER" />
+	    <result column="checkerName" property="checkername" jdbcType="VARCHAR" />
+	    <result column="checkTime" property="checktime" jdbcType="TIMESTAMP" />
+	    <result column="comments" property="comments" jdbcType="VARCHAR" />
+	    <result column="result" property="result" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<sql id="SELECT_ResourceApproval">
+	select id, actDeptId, actDeptName,  actorid, actor,  sendTime,resourceId, titleId, filetype,resourceName, checkerId, checkerName,
+      CONVERT(varchar(100), checkTime, 120)  as checkTime , comments, result
+    from ResourceApproval
+	</sql>
+	
+	<sql id="WHERE_ResourceApproval">
+		<dynamic prepend="where">
+		    <isNotNull property="actdeptid" prepend="AND">
+				<![CDATA[ResourceApproval.deptid=#actdeptid#]]>
+			</isNotNull>
+			<isNotNull property="resourceid" prepend="AND">
+				<![CDATA[ResourceApproval.resourceid=#resourceid#]]>
+			</isNotNull>
+			<isNotNull property="titleid" prepend="AND">
+				<![CDATA[ResourceApproval.titleid=#titleid#]]>
+			</isNotNull>
+			<isNotNull property="checkerid" prepend="AND">
+				<![CDATA[ResourceApproval.checkerid=#checkerid#]]>
+			</isNotNull>
+			<isNotNull property="result" prepend="AND">
+				<![CDATA[ResourceApproval.result=#result#]]>
+			</isNotNull>
+		    <isNotNull property="titleids" prepend="AND">
+		   		 titleid in
+				<iterate  conjunction="," open="(" close=")" property="titleids">
+				  #titleids[]#
+				</iterate>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	
+	<select id="ResourceApproval.selectById" resultMap="ResourceApproval.RESULT_ResourceApproval" parameterClass="Integer">
+      <include refid="SELECT_ResourceApproval"/>
+        WHERE ID = #id# 
+	</select>
+	
+   <select id="ResourceApproval.selectByMap"  resultMap="ResourceApproval.RESULT_ResourceApproval" parameterClass="java.util.Map">
+       <include refid="SELECT_ResourceApproval"/>
+       <include refid="WHERE_ResourceApproval"/>
+       <isNotNull property="orderBy" prepend="order by">
+       		$orderBy$ $order$
+       </isNotNull>
+	</select>
+	
+	<select id="ResourceApproval.count" resultClass="Integer" parameterClass="java.util.Map">
+		select count(*) from ResourceApproval
+		<include refid="WHERE_ResourceApproval"/>
+	</select>
+	
+	<insert id="ResourceApproval.insert" parameterClass="ResourceApproval">
+	  insert into ResourceApproval ( actDeptId, actDeptName, actor, actorId, sendTime,resourceId, titleId,
+      fileType, resourceName, checkerId, checkerName, checkTime, comments, result)
+    values (#actdeptid:INTEGER#, #actdeptname:VARCHAR#, #actor:VARCHAR#,
+      #actorid:INTEGER#, #sendTime:TIMESTAMP#,#resourceid:INTEGER#, #titleid:INTEGER#, #filetype:VARCHAR#,
+      #resourcename:VARCHAR#, #checkerid:INTEGER#, #checkername:VARCHAR#, #checktime:TIMESTAMP#,
+      #comments:VARCHAR#, #result:INTEGER#)
+	</insert>
+	
+	
+	<delete id="ResourceApproval.deleteByMap" parameterClass="java.util.Map">
+		DELETE FROM ResourceApproval 
+		<include refid="WHERE_ResourceApproval"/>
+	</delete>
+	
+	<update id="ResourceApproval.update" parameterClass="ResourceApproval">
+	 update ResourceApproval
+	  set
+      actDeptId = #actdeptid:INTEGER#,
+      actDeptName = #actdeptname:VARCHAR#,
+      actorId = #actorid:INTEGER#,
+      actor = #actor:VARCHAR#,
+      sendTime = #sendTime:TIMESTAMP#,
+      resourceId = #resourceid:INTEGER#,
+      titleId = #titleid:INTEGER#,
+      filetype = #filetype:VARCHAR#,
+      resourceName = #resourcename:VARCHAR#,
+      checkerId = #checkerid:INTEGER#,
+      checkerName = #checkername:VARCHAR#,
+      checkTime = #checktime:TIMESTAMP#,
+      comments = #comments:VARCHAR#,
+      result = #result:INTEGER#
+      WHERE ID = #id# 
+	</update>
+	
+	<delete id="ResourceApproval.deleteById" parameterClass="Integer">
+		DELETE FROM ResourceApproval
+		WHERE ID = #id# 
+	</delete>
+	
+	
+
+	<insert id="ResourceApproval.setAllResourceApprovalToUser"  parameterClass="java.util.Map">
+	INSERT INTO ResourceChecker
+      (titleId, userId)
+	SELECT ResourceTitle.ID, TUser.userId
+	FROM TUser CROSS JOIN
+	      ResourceTitle
+	WHERE 
+	 (TUser.USERID =#userId#)
+	 AND (ResourceTitle.ID IN
+	          (SELECT ResourceTitle.ID
+	         FROM ResourceTree INNER JOIN
+	               ResourceTitle ON ResourceTree.ID = ResourceTitle.treeId
+	         WHERE (ResourceTree.GroupId = #groupId#)))
+	</insert>
+</sqlMap>
+

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceInfo">
+
+	<typeAlias alias="ResourceInfo" type="com.nh.biz.domain.ResourceInfo"/>
+
+	<resultMap class="ResourceInfo" id="RESULT_ResourceInfo">
+		<result property="id" column="id"  />
+		<result property="titleid" column="titleId"  />
+		<result property="pid" column="pid"  />
+		<result property="filename" column="fileName"  />
+		<result property="filealiasname" column="fileAliasName" />
+		<result property="isdir" column="isDir"  />
+		<result property="filetype" column="fileType"  />
+		<result property="filedir" column="fileDir" />
+		<result property="filerealname" column="fileRealName"  />
+		<result property="filesize" column="fileSize"  />
+		<result property="modifiedtime" column="modifiedTime"  />
+		<result property="creator" column="creator" />
+		<result property="creatorid" column="creatorId" />
+		<result property="departmentid" column="departmentId"  />
+		<result property="department" column="department" />
+		<result property="approvalstatus" column="approvalStatus"  />
+		<result property="remark" column="remark"  />
+	</resultMap>
+	
+	<sql id="SELECT_ResourceInfo">
+	  SELECT id, titleId, pid, fileName, fileAliasName, isDir, fileType, fileDir, fileRealName, 
+      fileSize,   modifiedTime, creator,creatorid, departmentId, department, approvalStatus,remark,isDel
+      FROM ResourceInfo
+	</sql>
+	      
+	<sql id="WHERE_ResourceInfo">
+		<dynamic prepend="where">
+		    <isNotNull property="titleid" prepend="AND">
+				<![CDATA[ResourceInfo.titleid=#titleid#]]>
+			</isNotNull>
+			<isNotNull property="pid" prepend="AND">
+				<![CDATA[ResourceInfo.pid=#pid#]]>
+			</isNotNull>
+			<isNotNull property="departmentid" prepend="AND">
+				<![CDATA[ResourceInfo.departmentid=#departmentid#]]>
+			</isNotNull>
+			<isNotNull property="id" prepend="AND">
+				<![CDATA[ResourceInfo.id=#id#]]>
+			</isNotNull>
+			<isNotNull property="creatorid" prepend="AND">
+				<![CDATA[ResourceInfo.creatorid=#creatorid#]]>
+			</isNotNull>
+			<isNotNull property="approvalstatus" prepend="AND">
+				<![CDATA[ResourceInfo.approvalstatus=#approvalstatus#]]>
+			</isNotNull>
+			<isNotNull property="filealiasname" prepend="AND">
+				<![CDATA[ResourceInfo.filealiasname=#filealiasname#]]>
+			</isNotNull>
+			<isNotNull property="like_filealiasname" prepend="AND">
+				<![CDATA[ResourceInfo.filealiasname like #like_filealiasname#]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<sql id="UPDATE_ResourceInfo">
+	 update ResourceInfo
+    <dynamic prepend="set" >
+      <isNotNull prepend="," property="titleid" >
+        titleId = #titleid:INTEGER#
+      </isNotNull>
+      <isNotNull prepend="," property="pid" >
+        pid = #pid:INTEGER#
+      </isNotNull>
+      <isNotNull prepend="," property="filename" >
+        fileName = #filename:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="filealiasname" >
+        fileAliasName = #filealiasname:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="isdir" >
+        isDir = #isdir:BIT#
+      </isNotNull>
+      <isNotNull prepend="," property="filetype" >
+        fileType = #filetype:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="filedir" >
+        fileDir = #filedir:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="filerealname" >
+        fileRealName = #filerealname:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="filesize" >
+        fileSize = #filesize:NUMERIC#
+      </isNotNull>
+      <isNotNull prepend="," property="modifiedtime" >
+        modifiedTime = #modifiedtime:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="creator" >
+        creator = #creator:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="creatorid" >
+        creatorId = #creatorid:INTEGER#
+      </isNotNull>
+      <isNotNull prepend="," property="departmentid" >
+        departmentId = #departmentid:INTEGER#
+      </isNotNull>
+      <isNotNull prepend="," property="department" >
+        department = #department:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="approvalstatus" >
+        approvalStatus = #approvalstatus:INTEGER#
+      </isNotNull>
+      <isNotNull prepend="," property="remark" >
+        remark = #remark:VARCHAR#
+      </isNotNull>
+    </dynamic>
+	</sql>
+	
+	<select id="ResourceInfo.selectById" resultMap="ResourceInfo.RESULT_ResourceInfo" parameterClass="Integer">
+      <include refid="SELECT_ResourceInfo"/>
+        WHERE ID = #id# 
+	</select>
+	
+	<select id="ResourceInfo.selectByIds" resultMap="ResourceInfo.RESULT_ResourceInfo" parameterClass="java.util.List">
+      <include refid="SELECT_ResourceInfo"/>
+       WHERE ID  in 
+	  <iterate  conjunction="," open="(" close=")">
+				#[]#
+	  </iterate>
+	</select>
+	
+	
+   <select id="ResourceInfo.selectByMap"  resultMap="ResourceInfo.RESULT_ResourceInfo" parameterClass="java.util.Map">
+       <include refid="SELECT_ResourceInfo"/>
+       <include refid="WHERE_ResourceInfo"/>
+       order by id desc
+	</select>
+	
+	<select id="ResourceInfo.count" resultClass="Integer">
+		select count(id) from ResourceInfo
+		<include refid="WHERE_ResourceInfo"/>
+	</select>
+	
+	<insert id="ResourceInfo.insert" parameterClass="ResourceInfo">
+	 insert into ResourceInfo (titleId, pid, fileName, fileAliasName, isDir, fileType, fileDir,
+	      fileRealName, fileSize, modifiedTime, creator, creatorid,departmentId, department, approvalStatus,
+	      remark)
+	 values ( #titleid:INTEGER#, #pid:INTEGER#, #filename:VARCHAR#,
+	      #filealiasname:VARCHAR#, #isdir:BIT#, #filetype:VARCHAR#, #filedir:VARCHAR#,
+	      #filerealname:VARCHAR#, #filesize:NUMERIC#, #modifiedtime:TIMESTAMP#, #creator:VARCHAR#, #creatorid:INTEGER#,
+	      #departmentid:INTEGER#, #department:VARCHAR#, #approvalstatus:INTEGER#, #remark:VARCHAR#)
+		<selectKey resultClass="int" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey>
+	</insert>
+	
+	<update id="ResourceInfo.update" parameterClass="ResourceInfo">
+	  update ResourceInfo
+	  set
+      titleId = #titleid:INTEGER#,
+      pid = #pid:INTEGER#,
+      fileName = #filename:VARCHAR#,
+      fileAliasName = #filealiasname:VARCHAR#,
+      isDir = #isdir:BIT#,
+      fileType = #filetype:VARCHAR#,
+      fileDir = #filedir:VARCHAR#,
+      fileRealName = #filerealname:VARCHAR#,
+      fileSize = #filesize:NUMERIC#,
+      modifiedTime = #modifiedtime:TIMESTAMP#,
+      creator = #creator:VARCHAR#,
+      creatorId = #creatorid:VARCHAR#,
+      departmentId = #departmentid:INTEGER#,
+      department = #department:VARCHAR#,
+      approvalStatus = #approvalstatus:INTEGER#,
+      remark = #remark:VARCHAR#
+	  WHERE ID = #id# 
+	</update>
+	
+	<update id="ResourceInfo.updateByMap" parameterClass="java.util.Map">
+	<include refid="UPDATE_ResourceInfo"/>
+    WHERE ID = #id# 
+	</update>
+	
+	<update id="ResourceInfo.updateByIdsMap" parameterClass="java.util.Map">
+	<include refid="UPDATE_ResourceInfo"/>
+	 WHERE ID  in 
+	  <iterate  conjunction="," open="(" close=")" property="ids">
+				#ids[]#
+	  </iterate>
+	</update>
+	
+	
+	
+	<delete id="ResourceInfo.deleteById" parameterClass="Integer">
+		DELETE FROM ResourceInfo
+		WHERE ID = #id# 
+	</delete>
+	
+	<delete id="ResourceInfo.delete" parameterClass="java.util.Map">
+		DELETE FROM ResourceInfo 
+		<include refid="WHERE_ResourceInfo"/>
+	</delete>
+	
+</sqlMap>
+

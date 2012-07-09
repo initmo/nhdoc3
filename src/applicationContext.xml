@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:ehcache="http://ehcache-spring-annotations.googlecode.com/svn/schema/ehcache-spring" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	   		http://www.springframework.org/schema/context
+	   		http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/mvc 
+			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+			http://www.springframework.org/schema/aop   
+            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd   
+            http://ehcache-spring-annotations.googlecode.com/svn/schema/ehcache-spring   
+            http://ehcache-spring-annotations.googlecode.com/svn/schema/ehcache-spring/ehcache-spring-1.1.xsd"> 
+
+	
+	<!--激活annotation功x能 -->
+	<context:annotation-config />
+	
+	<aop:aspectj-autoproxy/>
+	
+	<!-- JSTL 国际化属性 -->	
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="messages"/>
+    </bean>
+	
+	    
+	<!-- 开启缓存注解功能 -->
+	<ehcache:annotation-driven cache-manager="ehCacheManager" />  
+              
+    <bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">  
+        <property name="configLocation" value="classpath:ehcache.xml" />  
+    </bean>
+	
+	<!-- 扫描指定package下所有带有如@controller,@services,@resource,并把所注释的注册为Spring Beans-->
+	<context:component-scan base-package="com.nh" />
+	
+	<!-- 只能用于springMVC,用于配置springMVC的注解驱动 -->
+	<mvc:annotation-driven /> 
+ 
+    <!-- 防止资源文件访问被springDisparch 拦截 -->
+ 	<mvc:resources  mapping="/resource/**"  location="/resource/"/>  
+
+   <!-- 拦截器  -->
+    <mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/> 
+			<bean class="com.nh.biz.interceptors.RequestAttributeInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	
+	
+	<!-- 导入jdbc-context.xml -->
+	<import resource="applicationContext-jdbc.xml" />
+	
+	
+</beans>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+	default-lazy-init="true">
+
+	<description>Quartz Configuration</description>
+	
+	<bean name="testJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+	  <property name="jobClass" value="com.nh.biz.timetask.TestJob" />
+	  <property name="jobDataAsMap">
+	    <map>
+	      <entry key="timeout" value="5" />
+	    </map>
+	  </property>
+	</bean><!--
+	
+	<bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+	     see the example of method invoking job above 
+	    <property name="jobDetail" ref="testJob" />
+	     1 seconds 
+	    <property name="startDelay" value="1000" />
+	     repeat every 5 seconds 
+	    <property name="repeatInterval" value="5000" />
+	</bean>
+	
+-->
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	    <property name="jobDetail" ref="testJob" />
+	    <!-- 0 15 10 1 * ? 每月1号上午10点15分触发  -->
+	    <property name="cronExpression" value="0/5 13 18 * * ?" />
+	</bean>
+
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	    <property name="triggers">
+	        <list>
+	            <ref bean="cronTrigger" />
+	        </list>
+	    </property>
+	</bean>
+	<!-- 
+	
+	  * Cron 表达式包括以下 7 个字段：
+		
+		秒
+		分
+		小时
+		月内日期
+		月
+		周内日期
+		年（可选字段）
+	  
+	  * Cron 触发器利用一系列特殊字符，如下所示：
+		
+		反斜线（/）字符表示增量值。例如，在秒字段中“5/15”代表从第 5 秒开始，每 15 秒一次。
+		
+		问号（?）字符和字母 L 字符只有在月内日期和周内日期字段中可用。问号表示这个字段不包含具体值。所以，如果指定月内日期，可以在周内日期字段中插入“?”，表示周内日期值无关紧要。字母 L 字符是 last 的缩写。放在月内日期字段中，表示安排在当月最后一天执行。在周内日期字段中，如果“L”单独存在，就等于“7”，否则代表当月内周内日期的最后一个实例。所以“0L”表示安排在当月的最后一个星期日执行。
+		
+		在月内日期字段中的字母（W）字符把执行安排在最靠近指定值的工作日。把“1W”放在月内日期字段中，表示把执行安排在当月的第一个工作日内。
+		
+		井号（#）字符为给定月份指定具体的工作日实例。把“MON#2”放在周内日期字段中，表示把任务安排在当月的第二个星期一。
+		
+		星号（*）字符是通配字符，表示该字段可以接受任何可能的值。
+		0 0 12 * * ? 每天12点触发 
+		0 15 10 ? * * 每天10点15分触发 
+		0 15 10 * * ? 每天10点15分触发 
+		0 15 10 * * ? * 每天10点15分触发 
+		0 15 10 * * ? 2005 2005年每天10点15分触发 
+		0 * 14 * * ? 每天下午的 2点到2点59分每分触发 
+		0 0/5 14 * * ? 每天下午的 2点到2点59分(整点开始，每隔5分触发) 
+		0 0/5 14,18 * * ? 每天下午的 2点到2点59分(整点开始，每隔5分触发) 
+		每天下午的 18点到18点59分(整点开始，每隔5分触发)
+		
+		0 0-5 14 * * ? 每天下午的 2点到2点05分每分触发 
+		0 10,44 14 ? 3 WED 3月分每周三下午的 2点10分和2点44分触发 
+		0 15 10 ? * MON-FRI 从周一到周五每天上午的10点15分触发 
+		0 15 10 15 * ? 每月15号上午10点15分触发 
+		0 15 10 L * ? 每月最后一天的10点15分触发 
+		0 15 10 ? * 6L 每月最后一周的星期五的10点15分触发 
+		0 15 10 ? * 6L 2002-2005 从2002年到2005年每月最后一周的星期五的10点15分触发 
+		0 15 10 ? * 6#3 每月的第三周的星期五开始触发 
+		0 0 12 1/5 * ? 每月的第一个中午开始每隔5天触发一次 
+		0 11 11 11 11 ? 每年的11月11号 11点11分触发(光棍节)
+	 -->
+</beans>

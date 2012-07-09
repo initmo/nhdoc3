@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="User">
+
+	<typeAlias alias="User" type="com.nh.biz.domain.system.User"/>
+	<typeAlias alias="Role" type="com.nh.biz.domain.system.Role"/>
+	<typeAlias alias="Permission" type="com.nh.biz.domain.system.Permission"/>
+
+	<resultMap class="User" id="user-result-basic">
+		<result property="userId" column="userId"/>
+		<result property="loginName" column="loginName"/>
+		<result property="passWord" column="passWord"/>
+		<result property="userName" column="userName"/>
+		<result property="deptId" column="deptId"/>
+		<result property="deptName" column="deptName"/>
+		<result property="passWord" column="passWord"/>
+	</resultMap>
+	
+	<resultMap class="User" id="user-result" extends="user-result-basic" groupBy="userId">
+		<result property="roleList"  resultMap="User.role-result"/>
+	</resultMap>
+	
+	<resultMap class="Role" id="role-result" groupBy="roleId">
+		<result property="roleId" column="roleId"/>
+		<result property="roleName" column="roleName"/>
+		<result property="roleDesc" column="roleDesc"/>
+		<result property="permission" resultMap="User.permission-result"/>
+	</resultMap>
+	
+	<resultMap class="Permission" id="permission-result">
+		<result property="permissionId" column="permissionId"/>
+		<result property="permissionName" column="permissionName"/>
+		<result property="permissionDisplay" column="permissionDisplay"/>
+	</resultMap>
+	
+	<sql id="sql_select_user">
+	SELECT TUser.userId, TUser.loginName, TUser.passWord, TUser.userName, TRole.roleId, 
+      TRole.roleName,TRole.roleDesc, TPermission.permissionId, TPermission.permissionName, 
+      TPermission.permissionDisplay, TDepartment.deptName, TUser.deptId
+	  FROM TRole INNER JOIN
+      TUserRole ON TRole.roleId = TUserRole.roleId RIGHT OUTER JOIN
+      TDepartment RIGHT OUTER JOIN
+      TUser ON TDepartment.deptId = TUser.deptId ON 
+      TUserRole.userId = TUser.userId LEFT OUTER JOIN
+      TPermission INNER JOIN
+      TRolePermission ON TPermission.permissionId = TRolePermission.PermissionId ON 
+      TRole.roleId = TRolePermission.RoleId
+	</sql>
+	
+	<sql id="sql_where_user">
+		<dynamic prepend="where">
+			<isNotNull property="userId" prepend="AND">
+				<![CDATA[TUser.userId=#userId#]]>
+			</isNotNull>
+			<isNotNull property="loginName" prepend="AND">
+				<![CDATA[TUser.loginName=#loginName#]]>
+			</isNotNull>
+			<isNotNull property="passWord" prepend="AND">
+				<![CDATA[TUser.passWord=#passWord#]]>
+			</isNotNull>
+			<isNotNull property="deptId" prepend="AND">
+				<![CDATA[TUser.deptId=#deptId#]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="User.selectById" resultMap="User.user-result" parameterClass="String">
+      <include refid="sql_select_user"/>
+	  WHERE TUser.userId = #id# 
+	</select>
+	
+    <select id="User.selectByMap"  resultMap="User.user-result" parameterClass="java.util.Map">
+       <include refid="sql_select_user"/>
+       <include refid="sql_where_user"/>
+	</select>
+
+
+	<insert id="User.insert" parameterClass="User">
+		INSERT INTO TUser (loginName, passWord, userName, deptId)  VALUES (#loginName#, #passWord#, #userName#, #deptId#)
+	    <selectKey resultClass="String" keyProperty="userId" >
+            SELECT @@IDENTITY AS ID
+        </selectKey> 
+	</insert>
+	
+	<update id="User.update" parameterClass="User">
+		UPDATE TUser SET loginName=#loginName#, userName=#userName#, deptId=#deptId# ,passWord=#passWord# WHERE userId = #userId# 
+	</update>
+	
+	<update id="User.deleteById" parameterClass="String">
+		DELETE FROM TUser WHERE userId = #userId# 
+	</update>
+	
+	<!-- [用户-角色] 中间表 -->
+	<insert id="User.insertUserRole" parameterClass="java.util.Map">
+		INSERT INTO TUserRole (userId, roleId) VALUES (#userId#,#roleId#)
+	</insert>
+	
+	<delete id="User.deleteUserRoleByUserId" parameterClass="java.util.Map">
+		DELETE FROM TUserRole WHERE userId = #userId# 
+	</delete>
+</sqlMap>
+

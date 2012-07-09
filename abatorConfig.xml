@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE abatorConfiguration PUBLIC "-//Apache Software Foundation//DTD Abator for iBATIS Configuration 1.0//EN" "http://ibatis.apache.org/dtd/abator-config_1_0.dtd" >
+<abatorConfiguration >
+  <abatorContext >
+    <jdbcConnection driverClass="net.sourceforge.jtds.jdbc.Driver" connectionURL="jdbc:jtds:sqlserver://localhost:1433/nhdoc3" userId="sa" password="sa" >
+      <classPathEntry location="E:\eclipse\workspace\nhdoc3\WebRoot\WEB-INF\lib\jtds-1.2.5.jar" />
+    </jdbcConnection>
+     <javaModelGenerator targetPackage="com.nh.generate" targetProject="nhdoc3" />
+    <sqlMapGenerator targetPackage="com.nh.generate" targetProject="nhdoc3" />
+   <daoGenerator targetPackage="com.nh.generate" targetProject="nhdoc3" type="SPRING" />
+   
+   
+    <table  tableName="ResourceInfo" >
+    </table>
+  </abatorContext>
+</abatorConfiguration>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Role">
+
+	<typeAlias alias="Role" type="com.nh.biz.domain.system.Role"/>
+	<typeAlias alias="Permission" type="com.nh.biz.domain.system.Permission"/>
+
+	<resultMap class="Role" id="role-result-basic">
+		<result property="roleId" column="roleId"/>
+		<result property="roleName" column="roleName"/>
+		<result property="roleDesc" column="roleDesc"/>
+	</resultMap>
+	
+	<resultMap class="Role" id="role-result" groupBy="roleId" extends="role-result-basic">
+		<result property="permission" resultMap="User.permission-result"/>
+	</resultMap>
+	
+	
+	<sql id="sql_select_role">
+	SELECT TRole.roleId, TRole.roleName, TRole.roleDesc, TPermission.permissionName, 
+      TPermission.permissionDisplay, TPermission.moduleId, 
+      TPermission.permissionId
+      FROM TPermission INNER JOIN
+      TRolePermission ON 
+      TPermission.permissionId = TRolePermission.PermissionId RIGHT OUTER JOIN
+      TRole ON TRolePermission.RoleId = TRole.roleId
+	</sql>
+	
+	<sql id="sql_where_role">
+		<dynamic prepend="where">
+		    <isNotNull property="roleId" prepend="AND">
+				<![CDATA[TRole.roleId=#roleId#]]>
+			</isNotNull>
+			<isNotNull property="roleName" prepend="AND">
+				<![CDATA[TRole.roleName=#roleName#]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="Role.selectById" resultMap="Role.role-result" parameterClass="Integer">
+      <include refid="sql_select_role"/>
+        WHERE TRole.roleId = #id# 
+	</select>
+	
+	<select id="Role.selectByIds" resultMap="Role.role-result" parameterClass="java.util.List">
+      <include refid="sql_select_role"/>
+        WHERE TRole.roleId  in 
+		<iterate  conjunction="," open="(" close=")">
+				#[]#
+		</iterate>
+	</select>
+	
+	<select id="Role.selectUniqueByMap" resultMap="Role.role-result" parameterClass="java.util.Map">
+       <include refid="sql_select_role"/>
+       <include refid="sql_where_role"/>
+	</select>
+	
+   <select id="Role.selectByMap"  resultMap="Role.role-result" parameterClass="java.util.Map">
+       <include refid="sql_select_role"/>
+       <include refid="sql_where_role"/>
+	</select>
+	
+	<insert id="Role.insert" parameterClass="Role">
+		INSERT INTO TRole (roleName,roleDesc)
+	    VALUES (#roleName#,#roleDesc#)
+	    <selectKey resultClass="int" keyProperty="roleId" >
+            SELECT @@IDENTITY AS ID
+        </selectKey> 
+	</insert>
+	
+	<insert id="Role.insertRolePermissions" parameterClass="java.util.Map">
+		INSERT INTO TRolePermission(roleId, permissionId)
+		VALUES (#roleId#,#permissionId#)
+	</insert>
+	
+	<delete id="Role.deleteRolePermByRoleId" parameterClass="java.util.Map">
+		DELETE FROM TRolePermission 
+		WHERE roleId = #roleId# 
+	</delete>
+	
+	<update id="Role.update" parameterClass="Role">
+		UPDATE TRole SET roleName = #roleName# ,roleDesc = #roleDesc#
+		WHERE roleId = #roleId# 
+	</update>
+	
+	<update id="Role.deleteById" parameterClass="Integer">
+		DELETE FROM TRole
+		WHERE roleId = #roleId# 
+	</update>
+	
+</sqlMap>
+

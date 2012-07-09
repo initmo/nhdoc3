@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Department">
+
+	<typeAlias alias="Department" type="com.nh.biz.domain.system.Department"/>
+
+     <resultMap class="Department" id="department-result-basic">
+		<result property="deptId" column="deptId"/>
+		<result property="deptName" column="deptName"/>
+	</resultMap>
+
+    <sql id="sql_select_dept">
+    	SELECT deptId, deptName, pid, hasChild FROM TDepartment
+    </sql>
+	
+	<sql id="sql_where_dept">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="deptId">
+			    deptId = #deptId#
+			</isNotNull>
+			<isNotNull prepend="and" property="deptName">
+			    deptName = #deptName#
+			</isNotNull>
+			<isNotNull prepend="and" property="pid">
+			    pid = #pid#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	
+    <select id="Department.selectById" resultClass="Department" parameterClass="Integer">
+		<include refid="sql_select_dept"/>
+	    where deptId = #id#
+	</select>
+	            
+	<select id="Department.selectByMap" resultClass="Department" parameterClass="java.util.Map">
+		<include refid="sql_select_dept"/>
+		<include refid="sql_where_dept"/>
+	</select>
+	
+	<select id="Department.selectByIds" resultClass="Department" parameterClass="java.util.List">
+      <include refid="sql_select_dept"/>
+        WHERE deptId  in 
+		<iterate  conjunction="," open="(" close=")">
+				#[]#
+		</iterate>
+	</select>
+	
+	<select id="Department.count" resultClass="int" parameterClass="java.util.Map">
+		select count(*) from TDepartment
+		<include refid="sql_where_dept"/>
+	</select>
+	
+	<insert id="Department.insert" parameterClass="Department">
+		INSERT INTO TDepartment(deptName, pid, hasChild) values 
+			(#deptName#, #pid#, #hasChild#) 
+		<selectKey resultClass="int" keyProperty="deptId">
+			SELECT @@IDENTITY AS ID
+		</selectKey>
+	</insert>
+	
+	<update id="Department.update" parameterClass="Department">
+		UPDATE TDepartment SET deptName=#deptName#, pid=#pid#, hasChild=#hasChild#  WHERE deptId = #deptId# 
+	</update>
+	
+	<update id="Department.updateByMap" parameterClass="java.util.Map">
+		UPDATE TDepartment   
+		<dynamic prepend="set">
+			<isNotNull property="deptName" prepend=",">
+				 deptName=#deptName#
+			</isNotNull>
+			<isNotNull property="pid" prepend=",">
+				 pid=#pid#
+			</isNotNull>
+			<isNotNull property="hasChild" prepend=",">
+				 hasChild=#hasChild#
+			</isNotNull>
+		</dynamic>
+		WHERE deptId = #id# 
+	</update>
+	
+	<update id="Department.deleteById" parameterClass="Integer">
+		DELETE FROM TDepartment WHERE deptId = #deptId# 
+	</update>
+	
+</sqlMap>
+

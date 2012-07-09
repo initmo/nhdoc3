@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="GroupDept" >
+	<typeAlias alias="GroupDept" type="com.nh.biz.domain.GroupDept"/>
+	
+  <resultMap id="RESULT_GroupDept" class="GroupDept" >
+    <result column="ID" property="id"  />
+    <result column="GRP_ID" property="grpId" />
+    <result column="DEPT_ID" property="deptId" />
+  </resultMap>
+	
+	<sql id="SELECT_GroupDept">
+	SELECT ID, GRP_ID, DEPT_ID FROM Resource_grp_dept
+	</sql>
+	
+	<sql id="WHERE_GroupDept">
+		<dynamic prepend="where">
+		    <isNotNull property="grpId" prepend="AND">
+				<![CDATA[Resource_grp_dept.GRP_ID=#grpId#]]>
+			</isNotNull>
+		    <isNotNull property="deptId" prepend="AND">
+				<![CDATA[Resource_grp_dept.DEPT_ID=#"deptId"#]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="GroupDept.selectById" resultMap="GroupDept.RESULT_GroupDept" parameterClass="Integer">
+      <include refid="SELECT_GroupDept"/>
+        WHERE ID = #id# 
+	</select>
+	
+	
+   <select id="GroupDept.selectByMap"  resultMap="GroupDept.RESULT_GroupDept" parameterClass="java.util.Map">
+       <include refid="SELECT_GroupDept"/>
+       <include refid="WHERE_GroupDept"/>
+	</select>
+	
+	<insert id="GroupDept.insert" parameterClass="GroupDept">
+		insert into Resource_grp_dept (GRP_ID, DEPT_ID)
+    	values ( #grpId:INTEGER#, #deptId:INTEGER#)
+	    <selectKey resultClass="int" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey> 
+	</insert>
+	
+	
+	<delete id="GroupDept.delete" parameterClass="java.util.Map">
+		delete from Resource_grp_dept
+		<include refid="WHERE_GroupDept"/>
+	</delete>
+	
+	<update id="GroupDept.update" parameterClass="GroupDept">
+	  update Resource_grp_dept
+      GRP_ID = #grpId:INTEGER#,
+      DEPT_ID = #deptId:INTEGER#
+	</update>
+	
+	<delete id="GroupDept.deleteById" parameterClass="Integer">
+		DELETE FROM Resource_grp_dept
+		WHERE ID = #id# 
+	</delete>
+	
+	<delete id="GroupDept.deleteByMap"  parameterClass="java.util.Map">
+		DELETE FROM Resource_grp_dept
+		 <include refid="WHERE_GroupDept"/>
+	</delete>
+</sqlMap>
+

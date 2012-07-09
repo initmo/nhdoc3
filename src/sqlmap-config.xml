@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/Person.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/User.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/Role.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/Permission.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/Department.xml"/>
+  
+  <sqlMap resource="com/nh/biz/dao/sqlmap/ResourceGroup.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/ResourceTree.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/ResourceTitle.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/ResourceInfo.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/GroupDept.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/ResourceActor.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/ResourceChecker.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/ResourceTemplate.xml"/>
+  
+  <sqlMap resource="com/nh/biz/dao/sqlmap/MyActNotice.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/ResourceApproval.xml"/>
+  <sqlMap resource="com/nh/biz/dao/sqlmap/ResourceUserTitle.xml"/>
+    
+  <!--配置和优化SqlMapClient实例的各选项，是可选的  
+<settings   
+    cacheModelsEnabled="true"      
+    enhancementEnabled="true"      
+    lazyLoadingEnabled="true"      
+    errorTracingEnabled="true"      
+    maxRequests="32"          
+    maxSessions="10"          
+    maxTransactions="5"          
+    useStatementNamespaces="false"   
+    />   
+-->  
+</sqlMapConfig>
