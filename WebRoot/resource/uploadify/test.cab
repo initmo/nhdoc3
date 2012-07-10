@@ -1,0 +1,34 @@
+<html>
+      <head>
+    
+        <title>Uploadify</title>
+
+        <link href="uploadify.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="swfobject.js"></script>
+        <script type="text/javascript" src="jquery.uploadify.v2.1.4.js?v=1"></script>
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $("#uploadify").uploadify({
+                'uploader'       : 'uploadify.swf',
+                'script'         : 'servlet/Upload',
+                'cancelImg'      : 'cancel.png',
+                'folder'         : 'uploads',
+                'queueID'        : 'fileQueue',
+                'auto'           : false,
+                'multi'          : true,
+                'simUploadLimit' : 2,
+                'buttonText'     : 'BROWSE'
+            });
+        });
+        </script>
+    </head>
+    <body>
+        <div id="fileQueue"></div>
+        <input type="file" name="uploadify" id="uploadify" />
+        <p>
+        <a href="javascript:jQuery('#uploadify').uploadifyUpload()">开始上传1</a>&nbsp;
+        <a href="javascript:jQuery('#uploadify').uploadifyClearQueue();">取消所有上传</a>
+        </p>
+    </body>
+</html>
